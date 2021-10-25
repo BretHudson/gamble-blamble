@@ -10,5 +10,8 @@
     "type": "git",
     "url": "git+https://github.com/BretHudson/gamble-blamble.git"
   },
-  "author": "Bret Hudson"
+  "author": "Bret Hudson",
+  "dependencies": {
+    "express": "4.17.1"
+  }
 }
