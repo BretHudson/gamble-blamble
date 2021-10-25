@@ -1,0 +1,11 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.0-alpine
+    ports:
+      - 5432:5432
+    environment:
+      # The postgres image uses "POSTGRES_" as a prefix
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: gamble-blamble
