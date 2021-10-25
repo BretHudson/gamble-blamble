@@ -1,3 +1,5 @@
+version: "3.7"
+
 services:
   postgres:
     container_name: postgres
@@ -9,3 +11,18 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
       POSTGRES_DB: gamble-blamble
+  
+  api:
+    container_name: api
+    image: node:14-alpine
+    command: sh -c "npm install && npm start"
+    ports:
+      - 3000:3000
+    working_dir: /gamble-blamble
+    volumes:
+      - ./:/gamble-blamble
+    environment:
+      PGUSER: "root"
+      PGHOST: "postgres" # The other container name
+      PGPASSWORD: "password"
+      PGDATABASE: "gamble-blamble"

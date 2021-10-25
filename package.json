@@ -4,6 +4,7 @@
   "description": "Bet on your favorite teams!",
   "main": "index.js",
   "scripts": {
+    "start": "node app/index.js",
     "local": "node app/index.js"
   },
   "repository": {

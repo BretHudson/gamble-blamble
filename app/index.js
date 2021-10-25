@@ -1,3 +1,5 @@
+console.log('Starting api...');
+
 const express = require('express');
 const { Client } = require('pg');
 
@@ -65,8 +67,16 @@ const initDatabase = async pgClient => {
 };
 
 (async () => {
-	const pgClient = new Client();
-	await pgClient.connect();
+	const pgClient = new Client({
+		statement_timeout: 60e3,
+		query_timeout: 60e3,
+		connectionTimeoutMillis: 60e3,
+	});
+	try {
+		await pgClient.connect();
+	} catch (err) {
+		console.log('Connection timeout...');
+	}
 	
 	console.log('Connected to postgres database');
 	
