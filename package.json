@@ -1,0 +1,14 @@
+{
+  "name": "gamble-blamble",
+  "version": "1.0.0",
+  "description": "Bet on your favorite teams!",
+  "main": "index.js",
+  "scripts": {
+    "local": "node app/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BretHudson/gamble-blamble.git"
+  },
+  "author": "Bret Hudson"
+}
