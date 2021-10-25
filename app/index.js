@@ -9,10 +9,10 @@ const {
 	PORT = 3000,
 } = process.env;
 
+const teamsTableName = 'teams';
+const betsTableName = 'bets';
+
 const initDatabase = async pgClient => {
-	const teamsTableName = 'teams';
-	const betsTableName = 'bets';
-	
 	await pgClient.query(
 		`CREATE TABLE IF NOT EXISTS ${teamsTableName} (
 			id		SERIAL PRIMARY KEY,
@@ -74,17 +74,50 @@ const initDatabase = async pgClient => {
 	await initDatabase(pgClient);
 	
 	const app = express();
+	app.use(express.json());
 
-	app.route('/bet')
-		.get((req, res) => {
-			res.send('Here are all the bets!');
-		})
-		.post((req, res) => {
-			res.send('Added bet');
-		})
-		.delete((req, res) => {
-			res.send('Deleted bet');
-		});
+	app.get('/bets', async (req, res) => {
+		const allBets = await pgClient.query(`SELECT * FROM ${betsTableName}`);
+		res.json(allBets.rows);
+	});
+	
+	app.post('/bet', async (req, res) => {
+		const {
+			teamId = null,
+			amount = null,
+		} = req.body;
+		
+		if ([teamId, amount].some(v => v === null) === true) {
+			// We didn't get all the required data from the body
+			return res.sendStatus(400);
+		}
+		
+		if (amount <= 0) return res.sendStatus(400);
+		
+		const teamResult = await pgClient.query(`SELECT * FROM ${teamsTableName} WHERE id = ($1)`, [teamId]);
+		
+		if (teamResult.rows.length === 0) return res.sendStatus(400);
+		
+		await pgClient.query(`INSERT INTO ${betsTableName}(team_id, amount) VALUES($1, $2)`, [teamId, amount]);
+		
+		res.send(`Added bet: $${amount} has been bet on team_id ${teamId}`);
+	});
+	
+	app.delete('/bet/:id', async (req, res) => {
+		const {
+			id = null,
+		} = req.params;
+		
+		if ((id === null) || (id < 0))
+			return res.sendStatus(400);
+		
+		const result = await pgClient.query(`DELETE FROM ${betsTableName} WHERE id = ($1)`, [id]);
+		
+		if (result.rowCount === 0)
+			return res.sendStatus(400);
+		
+		res.send(`Deleted bet ${id}`);
+	});
 
 	app.listen(PORT, () => {
 		console.log(`GAMBLE BLAMBLE listening on port ${PORT}`);
